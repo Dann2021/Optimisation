@@ -122,7 +122,7 @@ else:
          st.latex(fr"""f(x) = {fonc}""")
          #st.write(f)
          
-         st.subheader("# Condition de premier ordre : ")
+         st.subheader("Condition de premier ordre : ")
          st.markdown(r"""L'equation $f'(x)=0$ doit admettre au moins une solution""") #Ici on affiche seulement f'(x) = 0
 
          #Pour mieux afficher les derivees en latex
