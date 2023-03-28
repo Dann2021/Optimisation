@@ -184,7 +184,8 @@ else:
          dy = latex(fy)
          dy2 = latex(fy2)
          dyx = latex(fyx)
-         
+         hess = Matrix([[fx2,fxy],[fyx,fy2]])
+         hessien = latex(hess)
          # Ici on met ça pour afficher le gradient
          grad = Matrix([[fx],[fy]]) 
          gradient = latex(grad) # Ici c'est pour afficher le gradient en latex
@@ -197,7 +198,8 @@ else:
          st.text("Pour que la fonction admet un extremum :\nIl faut que le systeme ci-dessous admet au moins une solution")          
          st.latex(fr"""\begin{{cases}} f'_{x}(x,y)=0 \\f'_{y}(x,y)=0 \end{{cases}}\Rightarrow 
                \begin{{cases}}{dx} = 0\\ {dy} = 0\end{{cases}}""")
-         
+         st.subheader("La matrice hessienne est : ")
+         st.latex(fr"""H(x,y) = {hessien}""")
          st.subheader("Le gradient de notre fonction est : ")
          st.latex(fr"""D(x,y) = {gradient}""")
          eq1 = Eq(fx,0)
