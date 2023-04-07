@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from sympy import *
+import sympy as sy
 import scipy as sp
 import numpy as np 
 
@@ -21,7 +22,7 @@ if ";" in fonction:
    f,g = sympify(f, evaluate=False),sympify(g, evaluate=False) #Ici on convertit les deux fonctions en fonction sympy 
    
    #Ici on affiche les deux fonctions
-   fon, gon = latex(f), latex(g) #Creer juste pour permettre un affichage en latex
+   fon, gon = latex(f), latex(g) # Creer juste pour permettre un affichage en latex
    
    st.write("# La fonction à optimiser : ")
    st.latex(fr"""\begin{{cases}}f(x,y):{fon}\\ \;s/c \\g(x,y):{gon}=0 \end{{cases}}""")
@@ -53,45 +54,48 @@ if ";" in fonction:
    hessien = latex(hess)
    
 
-   # st.write("Le gradient est : ")
-   # st.latex(fr'''D(x,y) = {gradient}''')
    st.markdown(fr"Ecrivons la fonction lagrangienne : $L(x,y,\lambda) = f(x)+\lambda g(x)$")
    st.markdown(fr"""La fonction de Lagrange  est donc : $L(x,y,\lambda) = {f_lag}$""")
    
+   # A.1
    
-   # for element in kkt_eqs:
-   #   element = latex(element)
-   #   st.latex(fr"""\begin{{cases}}{element} = 0  \\ \end{{cases}}""")
-   #   st.latex(fr"""{element} = 0""")
+   choix = st.selectbox("Condition Premier Ordre", ("oui", "non"),index=1)
+   if choix == "oui":
+      st.subheader("Condition de premier ordre : ")
+      st.markdown(r"""$\begin{cases} L'_{x}(x,y,\lambda)=0 \\L'_{y}(x,y,\lambda)=0 \\L'_{\lambda}(x,y,\lambda)=0\end{cases}\Rightarrow 
+                  \begin{cases}f'_{x}(x,y)+\lambda.g'_{x}(x,y)=0 \\f'_{y}(x,y)+\lambda.g'_{y}(x,y)=0 \\ g(x,y)=0\end{cases}$""")
+      # A.2
    
-   #eqa = [element for element in kkt_eqs]
-   #eqa = latex(eqa)
-  
-   #st.latex(fr"""\begin{{cases}}{eqa} = 0 \\ \end{{cases}}""")
-   
-   st.subheader("Condition de premier ordre : ")
-   st.markdown(r"""$\begin{cases} L'_{x}(x,y,\lambda)=0 \\L'_{y}(x,y,\lambda)=0 \\L'_{\lambda}(x,y,\lambda)=0\end{cases}\Rightarrow 
-               \begin{cases}f'_{x}(x,y)+\lambda.g'_{x}(x,y)=0 \\f'_{y}(x,y)+\lambda.g'_{y}(x,y)=0 \\ g(x,y)=0\end{cases}$""")
-   
-   for element in kkt_eqs:
-      element = latex(element)
-      st.latex(fr"""\begin{{cases}}{element} = 0  \\ \end{{cases}}""")
+      st.subheader("""Le systeme à résoudre est le suivant : """)
       
-   st.write("La matrice hessienne est : ")
-   st.latex(fr"""D²(x,y,\lambda) = {hessien}""")   
-   
-   st.write("Les points stationnaires sont : ")
-   point = solve(kkt_eqs, ['x','y',lam], list=True) #,'z',lam], dict=True)
-   solutions = []
-   for elt in point:
-      elt = latex(elt)
-      solutions.append(elt)
-      st.latex(fr"""(x,y,\lambda) \in {elt}""")
-    
+      #      Ici on sait que le systeme à résoudre se trouve dans la variable kkt_eqs
+      #      donc on sait que cette variable est une liste de trois éléments qu'on peut facilement
+      #      afficher sous forme de systeme d'equation avec latex.
+      #      Pour cela on isole éléments par éléménts dans les variable k0,k1 et k2
+      #      puis on convertit respectivement ces variable (k0,k1,k2) en latex l0,l1 et l2
+      #      pour afficher correctement le systeme à résoudre
+      
+      k0,k1,k2 = kkt_eqs[0],kkt_eqs[1],kkt_eqs[2]
+      l0,l1,l2 = latex(k0), latex(k1), latex(k2)
+      st.latex(fr"""S(x,y, \lambda) = \begin{{cases}}{l0} = 0  \\ {l1} = 0 \\ {l2} = 0 \end{{cases}}""")
+      
+         
+      st.write("La matrice hessienne est : ")
+      st.latex(fr"""D²(x,y,\lambda) = {hessien}""")   
+      
+      st.write("Les points stationnaires sont : ")
+      point = solve(kkt_eqs, ['x','y',lam], dict=True) #,'z',lam], dict=True)
+      solutions = []
+      for elt in point:
+         elt = latex(elt)
+         solutions.append(elt)
+         st.latex(fr"""(x,y,\lambda) \in {elt}""")
+      
    st.subheader("Condition de second ordre : ") 
    
    determinant = det(hess)
    st.write(determinant)
+  
    
    #v = determinant.subs({'x':2,'y':3,'lam':-108})
    #st.write("# Delta")
@@ -184,8 +188,7 @@ else:
          dy = latex(fy)
          dy2 = latex(fy2)
          dyx = latex(fyx)
-         hess = Matrix([[fx2,fxy],[fyx,fy2]])
-         hessien = latex(hess)
+         
          # Ici on met ça pour afficher le gradient
          grad = Matrix([[fx],[fy]]) 
          gradient = latex(grad) # Ici c'est pour afficher le gradient en latex
@@ -198,8 +201,7 @@ else:
          st.text("Pour que la fonction admet un extremum :\nIl faut que le systeme ci-dessous admet au moins une solution")          
          st.latex(fr"""\begin{{cases}} f'_{x}(x,y)=0 \\f'_{y}(x,y)=0 \end{{cases}}\Rightarrow 
                \begin{{cases}}{dx} = 0\\ {dy} = 0\end{{cases}}""")
-         st.subheader("La matrice hessienne est : ")
-         st.latex(fr"""H(x,y) = {hessien}""")
+         
          st.subheader("Le gradient de notre fonction est : ")
          st.latex(fr"""D(x,y) = {gradient}""")
          eq1 = Eq(fx,0)
@@ -214,6 +216,4 @@ else:
             st.latex(fr"""(x,y) \in {sol}""")
             
          
-        
-   
 bas = st.caption("Développez par Dannys")
